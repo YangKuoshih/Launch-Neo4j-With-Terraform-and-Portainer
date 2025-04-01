@@ -10,7 +10,7 @@ services:
       - "7687:7687"  # Bolt protocol for client connections
     environment:
       # Set the Neo4j authentication (update the password with a secure value)
-      NEO4J_AUTH: "neo4j/Hunter902#!"
+      NEO4J_AUTH: "neo4j/admin"
       NEO4J_ACCEPT_LICENSE_AGREEMENT: eval
     volumes:
       - neo4j_data:/data
