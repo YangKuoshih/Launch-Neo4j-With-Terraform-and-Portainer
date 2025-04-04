@@ -33,36 +33,14 @@ echo ec2 = Start EC2
 doskey ec2x=aws ec2 stop-instances --instance-ids %INSTANCE_ID%
 echo ec2x = Stop EC2
 
-@REM doskey open-webui=start https://%ELASTIC_IP%:7101/
-@REM echo open-webui = Opens Open WebUI in Browser
-
-doskey neo4j=start https://%ELASTIC_IP%:7101/
+doskey neo4j=start https://%EIP_PUBLIC_DNS%:7474/
 echo neo4j = Opens Neo4j in Browser
 
-doskey portainer=start https://%ELASTIC_IP%:7102/
+doskey portainer=start https://%EIP_PUBLIC_DNS%:6102/
 echo portainer = Opens Portainer in Browser
-
-@REM doskey jupyterlab=start https://%ELASTIC_IP%:7103/
-@REM echo jupyterlab = Opens Jupyter Lab in Browser
-
-@REM doskey code-server=start https://%ELASTIC_IP%:7104/
-@REM echo code-server = Opens code-server in Browser
-
-@REM doskey litellm=start https://%ELASTIC_IP%:7105/
-@REM echo litellm = Opens LiteLLM in Browser
-
-@REM doskey controller=start %CONTROLLER_URL%
-@REM echo controller = Opens Controller in Browser
 
 doskey esl=%SCRIPTS_DIR%\ec2-setup-logs.bat
 echo esl = See EC2 setup logs
-
-@REM doskey ulc=%SCRIPTS_DIR%\update-litellm-config.bat
-@REM echo ulc = Update LiteLLM config
-
-@REM doskey controller-tail=aws logs tail /aws/lambda/%PROJECT_ID%-controller --follow
-@REM echo controller-tail = Opens Controller in Browser
-
 
 doskey tec2=ssh-keygen -R %ELASTIC_IP% $T cd %TERRAFORM_DIR% $T terraform taint aws_instance.main_instance $T %SCRIPTS_DIR%\tf-apply.bat 
 echo tec2 = Taint ec2 and destroy and recreate it
