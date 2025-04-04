@@ -62,6 +62,15 @@ https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 - Go back to the cmd window and paste it and hit Enter.
 - Better way to login is to use AWS Profile. See guide here: https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html
 
+### Step 6 Go to your terraform folder in the project file and create a terraform.tfvars.json file. 
+```bat
+cd terraform  
+terraform init  
+terraform apply  
+```
+- Check the plan and when ask for Enter a value, enter yes, hit Enter key
+- This may take a few min when you run first time
+
 ### Step 6 Go to your terraform folder in the project file and initialize and apply terraform
 ```bat
 cd terraform  

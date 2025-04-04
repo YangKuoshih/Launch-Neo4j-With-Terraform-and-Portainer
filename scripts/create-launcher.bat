@@ -1,8 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
-if %CD:~-19% NEQ my-neo4j-enterprise (
-    echo Please run this script from the my-neo4j-enterprise folder as following:
+if %CD:~-43% NEQ Launch-Neo4j-With-Terraform-and-Portainer (
+    echo Please run this script from the Launch-Neo4j-With-Terraform-and-Portainer folder as following:
     echo   scripts\create-launcher.bat
     exit /b
 )
