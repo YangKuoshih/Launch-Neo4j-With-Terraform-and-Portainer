@@ -71,15 +71,6 @@ terraform apply
 - Check the plan and when ask for Enter a value, enter yes, hit Enter key
 - This may take a few min when you run first time
 
-### Step 6 Go to your terraform folder in the project file and initialize and apply terraform
-```bat
-cd terraform  
-terraform init  
-terraform apply  
-```
-- Check the plan and when ask for Enter a value, enter yes, hit Enter key
-- This may take a few min when you run first time
-
 ### Step 7 If you like to use the command line to launch the application
 - Open cmd window, if not already open.
 - Make sure you do one of the following:
