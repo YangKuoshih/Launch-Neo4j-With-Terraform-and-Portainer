@@ -33,7 +33,7 @@ echo ec2 = Start EC2
 doskey ec2x=aws ec2 stop-instances --instance-ids %INSTANCE_ID%
 echo ec2x = Stop EC2
 
-doskey neo4j=start https://%EIP_PUBLIC_DNS%:7474/
+doskey neo4j=start http://%EIP_PUBLIC_DNS%:7474/
 echo neo4j = Opens Neo4j in Browser
 
 doskey portainer=start https://%EIP_PUBLIC_DNS%:6102/
