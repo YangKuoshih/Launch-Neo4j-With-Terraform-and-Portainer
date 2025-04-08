@@ -476,7 +476,7 @@ resource "aws_scheduler_schedule" "stop_ec2" {
   name       = "${var.project_id}-stop-ec2-schedule"
   group_name = "default"
   flexible_time_window { mode = "OFF" }
-  schedule_expression = "cron(0 0 * * ? *)"
+  schedule_expression = "cron(0 3 * * ? *)"
   target {
     arn      = "arn:aws:scheduler:::aws-sdk:ec2:stopInstances"
     role_arn = aws_iam_role.scheduler_role.arn
@@ -489,7 +489,7 @@ resource "aws_scheduler_schedule" "start_ec2" {
   group_name = "default"
   state      = "DISABLED"
   flexible_time_window { mode = "OFF" }
-  schedule_expression = "cron(0 4 * * ? *)"
+  schedule_expression = "cron(0 12 * * ? *)"
   target {
     arn      = "arn:aws:scheduler:::aws-sdk:ec2:startInstances"
     role_arn = aws_iam_role.scheduler_role.arn
