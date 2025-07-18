@@ -487,7 +487,7 @@ resource "aws_scheduler_schedule" "stop_ec2" {
 resource "aws_scheduler_schedule" "start_ec2" {
   name       = "${var.project_id}-start-ec2-schedule"
   group_name = "default"
-  state      = "DISABLED"
+  state      = "ENABLED"
   flexible_time_window { mode = "OFF" }
   schedule_expression = "cron(0 12 * * ? *)"
   target {
