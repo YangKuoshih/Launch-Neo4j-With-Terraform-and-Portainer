@@ -19,23 +19,24 @@ services:
       # NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
       
       # --- plugins you need ---
-      NEO4J_PLUGINS: "['bloom', 'graph-data-science', 'apoc', 'neo4j-streams']" 
+      NEO4J_PLUGINS: '["bloom", "apoc", "graph-data-science"]' 
     
       # --- expose GDS & Bloom procedures ---
       NEO4J_dbms_security_procedures_unrestricted: "gds.*,apoc.*,bloom.*"
-      NEO4J_dbms_security_procedures_allowed_list: "gds.*"
+      NEO4J_dbms_security_procedures_allowlist: "gds.*,apoc.*,bloom.*"
     
 
       # --- license paths (files are mounted at /licenses) ---
       # NEO4J_dbms_license__file: "/licenses/neo4j-enterprise.lic"
-      # NEO4J_gds_enterprise_license__file:: "/licenses/kevin.samuel_ny.frb.org+neo4j-gds.txt"
-      # NEO4j_dbms_bloom_license__file: "/licenses/kevin.samuel_ny.frb.org+neo4j-bloom-servertxt"
+      NEO4J_gds.enterprise.license_file: "/licenses/neo4j-gds.lic"
+      NEO4J_dbms.bloom.license_file: "/licenses/neo4j-bloom-server.lic"
       # --- license files ---
 
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs
       - neo4j_import:/var/lib/neo4j/import
+      - ./neo4j/gds:/var/lib/neo4j/gds
       - /opt/neo4j/licenses:/licenses:ro  # Mount licenses directory
 
     logging:
