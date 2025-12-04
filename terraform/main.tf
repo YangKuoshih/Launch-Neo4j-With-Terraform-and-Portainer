@@ -183,3 +183,50 @@ resource "local_file" "outputs" {
     echo "To get instance details, run: aws ssm get-parameter --name /${var.project_id}/info --with-decryption"
   EOT
 }
+
+resource "local_file" "launcher" {
+  filename = "${path.module}/../launcher.bat"
+  content  = <<-EOT
+    @echo off
+    set ELASTIC_IP=${aws_eip.dev_ec2_eip.public_ip}
+    set INSTANCE_ID=${aws_instance.main_instance.id}
+    set PROJECT_ID=${var.project_id}
+    set SSH_KEY=${path.module}/../keys/private_key.pem
+    
+    echo ===== Neo4j Enterprise Launcher =====
+    echo Neo4j Browser: http://%ELASTIC_IP%:7474
+    echo NeoDash: http://%ELASTIC_IP%:5005
+    echo Portainer: https://%ELASTIC_IP%:8102
+    echo Instance ID: %INSTANCE_ID%
+    echo.
+    echo ===== Shortcuts =====
+    echo tfa = Terraform apply
+    echo tfd = Terraform destroy
+    echo cdd = CD to project directory
+    echo sshe = SSH into EC2
+    echo ec2 = Start EC2
+    echo ec2x = Stop EC2
+    echo neo4j = Opens Neo4j in Browser
+    echo neodash = Opens NeoDash in Browser
+    echo portainer = Opens Portainer in Browser
+    echo esl = See EC2 setup logs
+    echo tec2 = Taint ec2 and destroy and recreate it
+    echo rkh = Host key info (auto-handled)
+    echo.
+    
+    doskey tfa=cd /d "${path.module}" $T terraform apply
+    doskey tfd=cd /d "${path.module}" $T terraform destroy
+    doskey cdd=cd /d "${path.module}/.."
+    doskey sshe=ssh -i "%SSH_KEY%" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ec2-user@%ELASTIC_IP%
+    doskey ec2=aws ec2 start-instances --instance-ids %INSTANCE_ID%
+    doskey ec2x=aws ec2 stop-instances --instance-ids %INSTANCE_ID%
+    doskey neo4j=start http://%ELASTIC_IP%:7474
+    doskey neodash=start http://%ELASTIC_IP%:5005
+    doskey portainer=start https://%ELASTIC_IP%:8102
+    doskey esl=ssh -i "%SSH_KEY%" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ec2-user@%ELASTIC_IP% "sudo tail -f /var/log/user-data.log"
+    doskey tec2=cd /d "${path.module}" $T terraform taint aws_instance.main_instance $T terraform apply
+    doskey rkh=echo "Host key checking disabled - no need to remove hosts"
+    
+    cmd /k
+  EOT
+}

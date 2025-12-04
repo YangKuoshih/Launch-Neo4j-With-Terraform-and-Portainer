@@ -1,6 +1,6 @@
 # AWS Secrets Manager for sensitive configuration
 resource "aws_secretsmanager_secret" "neo4j_credentials" {
-  name        = "${var.project_id}-neo4j-credentials"
+  name        = "${var.project_id}-neo4j-credentials-${formatdate("YYYYMMDD-hhmm", timestamp())}"
   description = "Neo4j database credentials"
   
   tags = {
@@ -24,7 +24,7 @@ resource "random_password" "neo4j_password" {
 
 # JWT Secret in Secrets Manager
 resource "aws_secretsmanager_secret" "jwt_secret" {
-  name        = "${var.project_id}-jwt-secret"
+  name        = "${var.project_id}-jwt-secret-${formatdate("YYYYMMDD-hhmm", timestamp())}"
   description = "JWT secret key for controller authentication"
   
   tags = {

@@ -1,6 +1,6 @@
 # Store SSH private key in Secrets Manager
 resource "aws_secretsmanager_secret" "ssh_private_key" {
-  name        = "${var.project_id}-ssh-private-key"
+  name        = "${var.project_id}-ssh-private-key-${formatdate("YYYYMMDD-hhmm", timestamp())}"
   description = "SSH private key for EC2 instance access"
   
   tags = {
