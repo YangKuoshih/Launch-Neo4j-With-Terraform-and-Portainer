@@ -56,7 +56,8 @@ resource "aws_iam_policy" "secrets_access" {
         ]
         Resource = [
           aws_secretsmanager_secret.neo4j_credentials.arn,
-          aws_secretsmanager_secret.jwt_secret.arn
+          aws_secretsmanager_secret.jwt_secret.arn,
+          aws_secretsmanager_secret.ssh_private_key.arn
         ]
       }
     ]
