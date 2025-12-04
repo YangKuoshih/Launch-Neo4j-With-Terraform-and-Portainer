@@ -124,6 +124,14 @@ resource "aws_security_group" "allow_sources" {
     cidr_blocks = local.all_allowed_ips
   }
 
+  ingress {
+    description = "NeoDash (5005)"
+    from_port   = 5005
+    to_port     = 5005
+    protocol    = "tcp"
+    cidr_blocks = local.all_allowed_ips
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -167,12 +175,39 @@ resource "aws_iam_policy" "dev_role_policy" {
   name        = "${var.project_id}_dev_role_policy"
   description = "Policy for Dev access"
   policy = jsonencode({
-    Version   = "2012-10-17",
-    Statement = [{
-      Effect   = "Allow",
-      Action   = "*",
-      Resource = "*"
-    }]
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ],
+        Resource = [
+          aws_s3_bucket.data_bucket.arn,
+          "${aws_s3_bucket.data_bucket.arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "ssm:GetParameter",
+          "ssm:PutParameter",
+          "ssm:GetParameters"
+        ],
+        Resource = "arn:aws:ssm:*:*:parameter/${var.project_id}/*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "ec2:DescribeInstances",
+          "ec2:DescribeTags"
+        ],
+        Resource = "*"
+      }
+    ]
   })
 
   tags = {
@@ -245,13 +280,13 @@ module "caddy_zip_upload" {
   output_filename = "caddy.zip"
 }
 
-module "docker_zip_upload" {
-  source          = "./modules/zip_and_upload_to_s3"
-  bucket_name     = aws_s3_bucket.data_bucket.id
-  folder_name     = "docker"
-  source_dir      = "${path.module}/../docker"
-  output_filename = "docker.zip"
-}
+# module "docker_zip_upload" {
+#   source          = "./modules/zip_and_upload_to_s3"
+#   bucket_name     = aws_s3_bucket.data_bucket.id
+#   folder_name     = "docker"
+#   source_dir      = "${path.module}/../docker"
+#   output_filename = "docker.zip"
+# }
 
 module "scripts_zip_upload" {
   source          = "./modules/zip_and_upload_to_s3"
@@ -294,6 +329,55 @@ module "ec2-setup_zip_upload" {
 # }
 
 ###############################
+# DOCKER COMPOSE UPDATE TRIGGER
+###############################
+resource "local_file" "update_script" {
+  filename = "${path.module}/update-docker.bat"
+  content = <<-EOT
+    aws ssm send-command --instance-ids ${aws_instance.main_instance.id} --document-name AWS-RunShellScript --parameters file://update-commands.json --output table
+  EOT
+}
+
+resource "aws_s3_object" "neo4j_compose" {
+  bucket = aws_s3_bucket.data_bucket.id
+  key    = "neo4j-docker-compose.yml"
+  source = "${path.module}/../docker/neo4j/docker-compose.yml"
+  etag   = filemd5("${path.module}/../docker/neo4j/docker-compose.yml")
+}
+
+resource "local_file" "update_commands" {
+  filename = "${path.module}/update-commands.json"
+  content = jsonencode({
+    commands = [
+      "cd /home/ec2-user/docker && docker compose -f neo4j/docker-compose.yml down || true",
+      "aws s3 cp s3://${aws_s3_bucket.data_bucket.id}/neo4j-docker-compose.yml /home/ec2-user/docker/neo4j/docker-compose.yml",
+      "chown ec2-user:ec2-user /home/ec2-user/docker/neo4j/docker-compose.yml",
+      "cd /home/ec2-user/docker && docker compose -f neo4j/docker-compose.yml up -d"
+    ]
+  })
+}
+
+resource "null_resource" "docker_compose_updater" {
+  triggers = {
+    neo4j_compose_hash = aws_s3_object.neo4j_compose.etag
+    script_hash = local_file.update_script.content_sha256
+  }
+
+  provisioner "local-exec" {
+    command = "update-docker.bat"
+    working_dir = path.module
+  }
+
+  depends_on = [
+    aws_instance.main_instance,
+    aws_eip.dev_ec2_eip,
+    aws_s3_object.neo4j_compose,
+    local_file.update_script,
+    local_file.update_commands
+  ]
+}
+
+###############################
 # USER DATA & EC2 INSTANCE
 ###############################
 locals {
@@ -303,6 +387,10 @@ locals {
     export PROJECT_ID=${var.project_id}
     export AWS_REGION=${data.aws_region.current.name}
     export DATA_BUCKET_NAME=${aws_s3_bucket.data_bucket.id}
+    
+    # Get Neo4j password from Secrets Manager
+    NEO4J_SECRET=$(aws secretsmanager get-secret-value --secret-id "${var.project_id}-neo4j-credentials" --region "${data.aws_region.current.name}" --query SecretString --output text)
+    export NEO4J_PASSWORD=$(echo "$NEO4J_SECRET" | jq -r '.password')
     
     ${local.user_data_script}
   EOT

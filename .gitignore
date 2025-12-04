@@ -6,12 +6,22 @@
 *.tfstate
 *.tfstate.*
 
-keys/*.pem
-keys/*.pub
-temp
+# SSH Keys
+keys/
+*.pem
+*.pub
+
+# Terraform variables and outputs
 terraform/terraform.tfvars.json
 terraform/set-tf-output-2-env-var.bat
-launcher.bat
 
+# Generated files
+launcher.bat
+temp/
 *.zip
+
+# AWS credentials
+.aws/
+credentials
+*.key
 

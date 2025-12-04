@@ -13,12 +13,12 @@ services:
 
     environment:
       # ---base---
-      NEO4j_server_config_strict__validation_enabled: "false"
+      NEO4J_server_config_strict__validation_enabled: "false"
 
-      # Set the Neo4j authentication (update the password with a secure value)
-      NEO4J_AUTH: "neo4j/neo4j_enterprise!"
-      NEO4J_ACCEPT_LICENSE_AGREEMENT: eval
-      # NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      # Set the Neo4j authentication (password from environment variable)
+      NEO4J_AUTH: "neo4j/${NEO4J_PASSWORD:-changeme}"
+      # NEO4J_ACCEPT_LICENSE_AGREEMENT: eval
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
       
       # --- plugins you need ---
       NEO4J_PLUGINS: '["bloom", "apoc", "graph-data-science"]' 
@@ -46,6 +46,18 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+ # ---------------------------
+  # NeoDash dashboard server
+  # ---------------------------
+  neodash:
+    image: neo4jlabs/neodash:latest
+    container_name: neodash
+    restart: unless-stopped
+    depends_on:
+      - neo4j
+    ports:
+      - "5005:5005"
 
 volumes:
   neo4j_data:

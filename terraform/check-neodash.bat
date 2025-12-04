@@ -1,0 +1,1 @@
+aws ssm send-command --instance-ids i-0569b328b72ddb69b --document-name AWS-RunShellScript --parameters "{\"commands\":[\"docker ps | grep neodash\",\"curl -s http://localhost:5005 || echo 'NeoDash not accessible'\"]}" --output table
