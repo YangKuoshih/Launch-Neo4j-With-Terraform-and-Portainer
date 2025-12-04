@@ -12,7 +12,9 @@ keys/
 *.pub
 
 # Terraform variables and outputs
-terraform/terraform.tfvars.json
+*.tfvars
+*.tfvars.json
+terraform/terraform.tfvars*
 terraform/set-tf-output-2-env-var.bat
 
 # Generated files
