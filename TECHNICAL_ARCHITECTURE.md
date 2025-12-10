@@ -25,7 +25,7 @@ This repository contains a complete Infrastructure as Code (IaC) solution for de
 - **SSH Keys**: Automated generation and secure storage
 
 #### Automation & Scheduling (`main.tf`)
-- **EventBridge Scheduler**: Automated EC2 stop/start (3 AM UTC stop, 12 PM UTC start)
+- **EventBridge Scheduler**: Automated EC2 stop/start (10 PM EST stop, 7 AM EST start)
 - **Cost Optimization**: Automatic instance management to minimize costs
 - **SSM Parameters**: Centralized configuration storage
 
@@ -111,8 +111,8 @@ AWS Infrastructure
 ## Cost Optimization Features
 
 ### Automated Scheduling
-- **Daily Stop**: 3:00 AM UTC (off-hours)
-- **Daily Start**: 12:00 PM UTC (business hours)
+- **Daily Stop**: 10:00 PM EST (off-hours)
+- **Daily Start**: 7:00 AM EST (business hours)
 - **EventBridge**: Serverless scheduling (no additional costs)
 
 ### Resource Efficiency
@@ -143,7 +143,7 @@ AWS Infrastructure
 4. **Access Services**: Use generated `launcher.bat`
 
 ### Daily Operations
-- **Start Work**: Services auto-start at 12 PM UTC
+- **Start Work**: Services auto-start at 7 AM EST
 - **Access Neo4j**: `neo4j` command in launcher
 - **Manage Containers**: `portainer` command in launcher
 - **SSH Access**: `sshe` command in launcher
