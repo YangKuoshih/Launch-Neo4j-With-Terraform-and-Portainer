@@ -26,4 +26,5 @@ temp/
 .aws/
 credentials
 *.key
+set-aws-creds.bat
 
